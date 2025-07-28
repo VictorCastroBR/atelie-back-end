@@ -3,6 +3,7 @@ from bson import ObjectId
 from src.infrastructure.config import settings
 from src.core.entities.user import User
 from src.core.entities.product import Product
+from bson import ObjectId
 
 client = MongoClient(settings.MONGO_URI)
 db = client[settings.DATABASE_NAME]
@@ -29,3 +30,20 @@ def create_product(product: Product) -> str:
 def list_products() -> list[Product]:
     docs = products_collection.find()
     return [Product(id=str(doc["_id"]), **doc) for doc in docs]
+
+def get_product_by_id(product_id: str) -> Product | None:
+    doc = products_collection.find_one({"_id": ObjectId(product_id)})
+    if doc:
+        return Product(id=str(doc["_id"]), **doc)
+    return None
+
+def update_product(product_id: str, data: dict) -> bool:
+    result = products_collection.update_one(
+        {"_id": ObjectId(product_id)},
+        {"$set": data}
+    )
+    return result.modified_count > 0
+
+def delete_product(product_id: str) -> bool:
+    result = products_collection.delete_one({"_id": ObjectId(product_id)})
+    return result.deleted_count > 0
