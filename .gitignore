@@ -1,0 +1,58 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cython debug symbols
+cython_debug/
+
+# Virtual environment
+venv/
+.env/
+.venv/
+env/
+
+# Environment variables
+.env
+*.env
+
+# VSCode settings
+.vscode/
+
+# Pytest cache
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+.cache
+
+# PyInstaller
+*.spec
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Pydantic compiled schemas
+*.pydantic_schema_cache
+
+# Logs and local files
+*.log
+*.sqlite3
+*.db
+*.pid
+
+# IDEs
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
