@@ -47,3 +47,18 @@ def update_product(product_id: str, data: dict) -> bool:
 def delete_product(product_id: str) -> bool:
     result = products_collection.delete_one({"_id": ObjectId(product_id)})
     return result.deleted_count > 0
+
+def list_catalog_products(name: str = None, min_price: float = None, max_price: float = None) -> list[Product]:
+    query = {}
+    
+    if name:
+        query["name"] = {"$regex": name, "$options": "i"}
+    if min_price is not None:
+        query["price"] = query.get("price", {})
+        query["price"]["$gte"] = min_price
+    if max_price is not None:
+        query["price"] = query.get("price", {})
+        query["price"]["$lte"] = max_price
+        
+    docs = products_collection.find(query)
+    return [Product(id=str(doc["_id"]), **doc) for doc in docs] 
