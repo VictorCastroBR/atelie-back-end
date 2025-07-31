@@ -10,9 +10,10 @@ router = APIRouter(prefix="/sales", tags=["Vendas"])
 @router.post("/", response_model=SaleOut)
 def register_sale(data: SaleCreate, user_email: str = Depends(get_current_user)):
     user = find_user_by_email(user_email)
-    sale = Sale(user_id=user.id, products=data.products, total=data.total)
+    total = sum(item.quantity * item.price for item in data.products)
+    sale = Sale(user_id=user.id, products=data.products, total=total)
     sale_id = create_sale(sale)
-    return SaleOut(id=sale_id, user_id=user.id, **data.dict())
+    return SaleOut(id=sale_id, user_id=user.id, products=data.products, total=total)
 
 @router.get("/", response_model=list[SaleOut])
 def get_my_sales(user_email: str = Depends(get_current_user)):

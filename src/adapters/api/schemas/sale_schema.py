@@ -9,7 +9,7 @@ class ProductItemInput(BaseModel):
     
 class SaleCreate(BaseModel):
     products: List[ProductItemInput]
-    total: float
+    total: float | None = None
     
 class SaleOut(SaleCreate):
     id: str
