@@ -4,10 +4,13 @@ from src.infrastructure.config import settings
 from src.core.entities.user import User
 from src.core.entities.product import Product
 from bson import ObjectId
+from src.core.entities.sale import Sale
 
 client = MongoClient(settings.MONGO_URI)
 db = client[settings.DATABASE_NAME]
 users_collection = db["users"]
+products_collection = db["products"]
+sales_collection = db["sales"]
 
 def create_user(user: User) -> str:
     user_dict = user.dict(exclude={"id"})
@@ -19,8 +22,6 @@ def find_user_by_email(email: str) -> User | None:
     if doc:
         return User(id=str(doc["_id"]), **doc)
     return None
-
-products_collection = db["products"]
 
 def create_product(product: Product) -> str:
     doc = product.dict(exclude={"id"})
@@ -61,4 +62,13 @@ def list_catalog_products(name: str = None, min_price: float = None, max_price: 
         query["price"]["$lte"] = max_price
         
     docs = products_collection.find(query)
-    return [Product(id=str(doc["_id"]), **doc) for doc in docs] 
+    return [Product(id=str(doc["_id"]), **doc) for doc in docs]
+
+def create_sale(sale: Sale) -> str:
+    doc = sale.dict(exclude={"id"})
+    result = sales_collection.insert_one(doc)
+    return str(result.inserted_id)
+
+def list_sales_by_user(user_id: str) -> list[Sale]:
+    docs = sales_collection.find({"user_id": user_id})
+    return [Sale(id=str(doc["_id"]), **doc) for doc in docs]
