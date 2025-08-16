@@ -4,6 +4,7 @@ from src.infrastructure.config import settings
 from src.core.entities.user import User
 from src.core.entities.product import Product
 from bson import ObjectId
+from datetime import datetime, timedelta
 from src.core.entities.sale import Sale
 
 client = MongoClient(settings.MONGO_URI)
@@ -11,6 +12,7 @@ db = client[settings.DATABASE_NAME]
 users_collection = db["users"]
 products_collection = db["products"]
 sales_collection = db["sales"]
+refresh_collection = db["refresh_tokens"]
 
 def create_user(user: User) -> str:
     user_dict = user.dict(exclude={"id"})
@@ -72,3 +74,27 @@ def create_sale(sale: Sale) -> str:
 def list_sales_by_user(user_id: str) -> list[Sale]:
     docs = sales_collection.find({"user_id": user_id})
     return [Sale(id=str(doc["_id"]), **doc) for doc in docs]
+
+def save_refresh_token(token: str, email: str, expires_days=7):
+    expire_at = datetime.utcnow() + timedelta(days=expires_days)
+    refresh_collection.insert_one({
+        "token": token,
+        "user_email": email,
+        "created_at": datetime.utcnow(),
+        "expires_at": expire_at,
+        "active": True
+    })
+    
+def invalidate_refresh_token(token: str):
+    refresh_collection\
+        .update_one(
+            {"token": token},
+            {"$set": {"active": False}}
+        )
+
+def is_valid_refresh_token(token: str) -> str | None:
+    doc = refresh_collection\
+        .find_one({"token": token, "active": True})
+    if doc and doc["expires_at"] > datetime.utcnow():
+            return doc["user_email"]
+    return None

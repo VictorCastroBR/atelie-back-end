@@ -22,6 +22,15 @@ def create_access_token(data: dict, expires_minutes: int = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm="HS256")
 
+def create_refresh_token(data: dict):
+    expire = datetime.utcnow() + timedelta(days=7)
+    to_encode = data.copy()
+    to_encode.update({"exp": expire, "type": "refresh"})
+    return jwt.encode(to_encode, settings.JWT_SECRET, algorithm="HS256")
+
+def decode_token(token: str):
+    return jwt.decode(token, settings.JWT_SECRET, algorithms=["HS256"])
+
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
     credentials_error = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
