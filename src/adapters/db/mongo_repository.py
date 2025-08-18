@@ -98,3 +98,18 @@ def is_valid_refresh_token(token: str) -> str | None:
     if doc and doc["expires_at"] > datetime.utcnow():
             return doc["user_email"]
     return None
+
+def add_image_to_product(product_id: str, image_data: dict) -> bool:
+    result = products_collection.update_one(
+        {"_id": ObjectId(product_id)},
+        {"$push": {"images": image_data}}
+    )
+    return result.modified_count > 0
+
+def remove_image_from_product(product_id: str, public_id: str) -> bool:
+    result = products_collection.update_one(
+        {"_id": ObjectId(product_id)},
+        {"$pull": {"image": {"public_id": public_id}}}
+    )
+    
+    return result.modified_count > 0
