@@ -3,6 +3,7 @@ from bson import ObjectId
 from src.infrastructure.config import settings
 from src.core.entities.user import User
 from src.core.entities.product import Product
+from src.core.entities.store import Store
 from bson import ObjectId
 from datetime import datetime, timedelta
 from src.core.entities.sale import Sale
@@ -13,6 +14,7 @@ users_collection = db["users"]
 products_collection = db["products"]
 sales_collection = db["sales"]
 refresh_collection = db["refresh_tokens"]
+store_collection = db["store"]
 
 def create_user(user: User) -> str:
     user_dict = user.dict(exclude={"id"})
@@ -113,3 +115,18 @@ def remove_image_from_product(product_id: str, public_id: str) -> bool:
     )
     
     return result.modified_count > 0
+
+def get_store() -> Store:
+    result = store_collection.find_one()
+    if (result):
+        return Store(id=str(result["_id"]), **result)
+    return None
+
+def isThereAStore():
+    result = store_collection.count_documents({})
+    return result > 0
+
+def register_store(store: Store) -> str:
+    store_dict = store.dict(exclude={"id"})
+    result = store_collection.insert_one(store_dict)
+    return str(result.inserted_id)

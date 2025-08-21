@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.adapters.api.routes import auth, product, catalog, sales
+from src.adapters.api.routes import auth, product, catalog, sales, store
 
 app = FastAPI(title="Catálogo Digital")
 
@@ -22,3 +22,4 @@ app.include_router(auth.router)
 app.include_router(product.router)
 app.include_router(catalog.router)
 app.include_router(sales.router)
+app.include_router(store.router)
