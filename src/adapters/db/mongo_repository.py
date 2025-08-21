@@ -130,3 +130,10 @@ def register_store(store: Store) -> str:
     store_dict = store.dict(exclude={"id"})
     result = store_collection.insert_one(store_dict)
     return str(result.inserted_id)
+
+def update_store(store_id: str, data: dict) -> bool:
+    result  = store_collection.update_one(
+        {"_id": ObjectId(store_id)},
+        {"$set": data}
+    )
+    return result.modified_count > 0
