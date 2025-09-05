@@ -137,3 +137,10 @@ def update_store(store_id: str, data: dict) -> bool:
         {"$set": data}
     )
     return result.modified_count > 0
+
+def set_image_store(store_id: str, image_data: str) -> bool:
+    result = store_collection.update_one(
+        {"_id": ObjectId(store_id)},
+        {"$set": {"img": image_data}}
+    )
+    return result.modified_count > 0

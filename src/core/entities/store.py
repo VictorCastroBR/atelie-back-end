@@ -10,7 +10,6 @@ class Address(BaseModel):
     
 class StoreImage(BaseModel):
     url: str
-    public_url: str
 
 class Store(BaseModel):
     id: Optional[str] = None

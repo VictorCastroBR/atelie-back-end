@@ -72,10 +72,10 @@ async def upload_image(
     except Exception as e:
         raise HTTPException(status=500, detail=f"Erro ao fazer upload: {e}")
     
-@router.delete("/delete-image/{product_id}/{public_id}")
+@router.delete("/delete-image/{product_id}/products/{public_id}")
 async def delete_image(product_id: str, public_id: str, user=Depends(get_current_user)):
         try:
-            result = cloudinary.uploader.destroy(public_id)
+            result = cloudinary.uploader.destroy('products/58d27b72-8bbc-4d77-af65-4d20f73c215a', resource_type='image')
             
             if result.get("result") != "ok":
                 raise HTTPException(status_code=400, detail="Erro ao excluir no Cloudnary")
